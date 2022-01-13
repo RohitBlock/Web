@@ -1,3 +1,4 @@
+module.exports = function(callback) {
 const Web3 = require('web3');
 const MyContract = require('./build/contracts/demo.json')
 
@@ -39,3 +40,4 @@ const init= async () =>{
 }
 
 init();
+}
