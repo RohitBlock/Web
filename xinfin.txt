@@ -1,0 +1,55 @@
+module.exports = function(callback){
+const Web3 = require('web3');
+const MyContract = require('./build/contracts/demo.json')
+
+const HDWalletProvider = require('@truffle/hdwallet-provider');
+
+const address ="0xd88aC265b7B0560d3d031853C39BCa972d636d9A"
+const receiver ="0x764c4c17809a6b5a3d689EAcd75519f8992853Db"
+const privateKey = "8f2c1f2051a2827e1e369dc62dbcc201696fd3cc07288aa8951ffc6a6d642376"
+
+const init= async () =>{
+  const provider  = new HDWalletProvider(privateKey,
+    "https://rpc.apothem.network"
+    );
+
+ const web3 = new Web3(provider)
+
+//*************USING WEB3 TO DEPLOY AND RETRIVE THE VALUE AT SAME TIME  */
+
+let contract = new web3.eth.Contract(MyContract.abi);
+let temp= await web3.eth.getTransactionFromBlock('28734674', 2)
+contract = await contract.deploy({data: MyContract.bytecode}).send({from: address})
+await contract.methods.addToBlockchain(receiver,50,"hello everyone this is XDC  new data ")
+ .send({from: address }).on("receive",(receive)=>{
+  console.log("contract Address", receive.contractAddress);
+})
+const result = await contract.methods.getAllTransactions().call();
+console.log(result);
+
+
+//*************USING WEB3JS TO INTERACT WITH DEPLOYED CONTRACT */
+
+//  var contactaddresspoint ='0xd88aC265b7B0560d3d031853C39BCa972d636d9A'
+//  let contract = new web3.eth.Contract(MyContract.abi,contactaddresspoint);
+//  const result = await contract.methods.getAllTransactions().call()
+//  console.log(result);
+
+}
+
+init();
+}
+
+
+  xinfinNetwork: {
+      provider: () => new HDWalletProvider(mnemonic, `https://rpc.apothem.network`),
+      network_id: 51,       // xinfinNetwork's chan id or 51 or 551 :  
+                            //51: "https://rpc.apothem.network",
+                            //551: "https://devnetrpc.apothem.network",  and similar chain in node url 
+      gas: 250000000,       
+      confirmations: 10,    
+      timeoutBlocks: 200,  
+      from: "0xd88aC265b7B0560d3d031853C39BCa972d636d9A"
+      //skipDryRun: true  
+
+   },
